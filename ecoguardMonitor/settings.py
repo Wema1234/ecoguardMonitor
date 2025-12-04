@@ -37,7 +37,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts',
+    'media_assets',
+    'cloudinary',
 ]
+# register our custom user model
+AUTH_USER_MODEL ='accounts.User'
+# Email backend for password reset
+EMAIL_BACKEND ='django.core.mail.backends.console.EmailBackend'
+# Register login URL
+LOGIN_URL ='accounts:login'
+LOGIN_REDIRECT_URL ='media_assets:dashboard'
+LOGOUT_REDIRECT_URL ='accounts:login'
+import cloudinary
+CLOUDINARY_CONFIGS = {
+    'cloud_name':'dmdetkyk2',
+    'api_key':'911117833375911',
+    'api_secret':'29H3JL2tUwMlVVuxyrIBOkWaabo',
+}
+cloudinary.config(**CLOUDINARY_CONFIGS)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,10 +72,11 @@ ROOT_URLCONF = 'ecoguardMonitor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -65,6 +84,8 @@ TEMPLATES = [
         },
     },
 ]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 WSGI_APPLICATION = 'ecoguardMonitor.wsgi.application'
 
