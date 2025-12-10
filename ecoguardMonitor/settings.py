@@ -51,9 +51,9 @@ LOGIN_REDIRECT_URL ='media_assets:dashboard'
 LOGOUT_REDIRECT_URL ='accounts:login'
 import cloudinary
 CLOUDINARY_CONFIGS = {
-    'cloud_name':'dmdetkyk2',
-    'api_key':'911117833375911',
-    'api_secret':'29H3JL2tUwMlVVuxyrIBOkWaabo',
+    'cloud_name':'',
+    'api_key':'',
+    'api_secret':'',
 }
 cloudinary.config(**CLOUDINARY_CONFIGS)
 
