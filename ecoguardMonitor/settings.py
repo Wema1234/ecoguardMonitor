@@ -40,22 +40,39 @@ INSTALLED_APPS = [
     'accounts',
     'media_assets',
     'cloudinary',
+    'mediampesa',
 ]
 # register our custom user model
-AUTH_USER_MODEL ='accounts.User'
+AUTH_USER_MODEL = "accounts.User"
 # Email backend for password reset
-EMAIL_BACKEND ='django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Register login URL
-LOGIN_URL ='accounts:login'
-LOGIN_REDIRECT_URL ='media_assets:dashboard'
-LOGOUT_REDIRECT_URL ='accounts:login'
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'media_assets:dashboard'
+LOGOUT_REDIRECT_URL = 'accounts:login'
+
 import cloudinary
+from decouple import config
 CLOUDINARY_CONFIGS = {
-    'cloud_name':'dmdetkyk2',
-    'api_key':'911117833375911',
-    'api_secret':'29H3JL2tUwMlVVuxyrIBOkWaabo',
+    'cloud_name':config('CLOUDINARY_CLOUD_NAME'),
+    'api_key':config('CLOUDINARY_API_KEY'),
+    'api_secret':config('CLOUDINARY_API_SECRET'),
+
 }
-cloudinary.config(**CLOUDINARY_CONFIGS)
+if  CLOUDINARY_CONFIGS['cloud_name']:
+    cloudinary.config(**CLOUDINARY_CONFIGS)
+
+import os
+from dotenv import load_dotenv
+load_dotenv()
+# environment configs for emails sending
+EMAIL_BACKEND=os.getenv("EMAIL_BACKEND")
+EMAIL_HOST=os.getenv("EMAIL_HOST")
+EMAIL_PORT=os.getenv("EMAIL_PORT")
+EMAIL_USE_TLS=os.getenv("EMAIL_USE_TLS") == 'True'
+EMAIL_HOST_USER=os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD=os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL=os.getenv("DEFAULT_FROM_EMAIL")
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -67,7 +84,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ecoguardMonitor.urls'
+ROOT_URLCONF = "ecoguardMonitor.urls"
 
 TEMPLATES = [
     {

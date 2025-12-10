@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}My Media | EcoGuard Monitor{% endblock %}
+
+{% block extra_css %}
+<style>
+	/* Thumbnails behavior and card heights for uniform grid */
+	.card-img-top { object-fit: cover; height: 180px; }
+	.card .card-body { min-height: 110px; }
+	.text-truncate { max-width: 100%; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<div>
+			<h2 class="mb-1">My Media</h2>
+			<p class="text-muted mb-0">Assets you've uploaded. Manage, edit or delete your items.</p>
+		</div>
+		<div class="d-flex gap-2">
+			<a href="{% url 'media_assets:upload_media' %}" class="btn btn-success">Upload new</a>
+			<a href="{% url 'media_assets:dashboard' %}" class="btn btn-outline-secondary">Back to dashboard</a>
+		</div>
+	</div>
+
+	<!-- Optional search/filter -->
+	<form method="GET" class="row g-2 mb-3">
+		<div class="col-md-6">
+			<input type="search" name="q" value="{{ request.GET.q|default:'' }}" class="form-control" placeholder="Search by title or tag">
+		</div>
+		<div class="col-md-3">
+			<select name="sort" class="form-select">
+				<option value="recent" {% if request.GET.sort == 'recent' %}selected{% endif %}>Newest</option>
+				<option value="oldest" {% if request.GET.sort == 'oldest' %}selected{% endif %}>Oldest</option>
+			</select>
+		</div>
+		<div class="col-md-3 text-end">
+			<button class="btn btn-primary">Apply</button>
+		</div>
+	</form>
+
+	{% if user_assets %}
+	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+		{% for asset in user_assets %}
+		<div class="col">
+			<div class="card h-100 position-relative">
+				{# Thumbnail handling: support both dict-style (thumbnail_url) and model instance (media_file.url) #}
+				{% if asset.thumbnail_url %}
+					<img src="{{ asset.thumbnail_url }}" class="card-img-top" alt="{{ asset.title }}">
+				{% elif asset.media_file %}
+					{% if asset.media_file.url %}
+						<img src="{{ asset.media_file.url }}" class="card-img-top" alt="{{ asset.title }}">
+					{% else %}
+						<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:180px;">No preview</div>
+					{% endif %}
+				{% else %}
+					<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:180px;">No preview</div>
+				{% endif %}
+
+				{# Badge showing category (image/video/document) if available #}
+				{% if asset.category %}
+					{% if asset.category == 'image' %}
+						<span class="badge bg-success position-absolute m-2">Image</span>
+					{% elif asset.category == 'video' %}
+						<span class="badge bg-warning text-dark position-absolute m-2">Video</span>
+					{% elif asset.category == 'document' %}
+						<span class="badge bg-secondary position-absolute m-2">Document</span>
+					{% else %}
+						<span class="badge bg-info position-absolute m-2">{{ asset.category }}</span>
+					{% endif %}
+				{% endif %}
+
+				<div class="card-body d-flex flex-column">
+					<h6 class="card-title mb-1 text-truncate">{{ asset.title }}</h6>
+					<p class="text-muted small mb-2">{% if asset.created_at %}{{ asset.created_at|date:'M j, Y' }}{% endif %}</p>
+					<div class="mt-auto d-flex justify-content-between align-items-center">
+						<a href="{% url 'media_assets:media_detail' asset.id %}" class="btn btn-sm btn-outline-primary">View</a>
+						<div class="btn-group">
+							<a href="{% url 'media_assets:edit_media' asset.id %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+							<form method="POST" action="{% url 'media_assets:delete_view' asset.id %}" style="display:inline;">
+								{% csrf_token %}
+								<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this asset?');">Delete</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+	<!-- Pagination (if using Django Paginator and page_obj) -->
+	{% if page_obj %}
+	<nav aria-label="Page navigation" class="mt-4">
+		<ul class="pagination justify-content-center">
+			{% if page_obj.has_previous %}
+			<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo; Prev</a></li>
+			{% else %}
+			<li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
+			{% endif %}
+
+			{% for num in page_obj.paginator.page_range %}
+				{% if num == page_obj.number %}
+					<li class="page-item active"><span class="page-link">{{ num }}</span></li>
+				{% else %}
+					<li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a></li>
+				{% endif %}
+			{% endfor %}
+
+			{% if page_obj.has_next %}
+			<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next &raquo;</a></li>
+			{% else %}
+			<li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+			{% endif %}
+		</ul>
+	</nav>
+	{% endif %}
+
+	{% else %}
+	<div class="card p-5 text-center">
+		<p class="mb-3">You haven't uploaded any media yet.</p>
+		<a href="{% url 'media_assets:upload_media' %}" class="btn btn-primary">Upload your first asset</a>
+	</div>
+	{% endif %}
+
+</div>
+
+{% endblock %}
+

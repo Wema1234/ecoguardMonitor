@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoGuard | Charts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Data Type Distribution</h2>
+    <canvas id="dataTypeChart" width="400" height="200"></canvas>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Make sure chart_data_json is passed from Django view
+    const chartData = {{ chart_data_json|safe }};
+
+    const dataTypeCtx = document.getElementById('dataTypeChart').getContext('2d');
+
+    const dataTypeData = {
+        labels: ['Air Quality', 'Waste Management', 'Water Levels', 'Other'],
+        datasets: [{
+            label: 'Number of Submissions',
+            data: [
+                chartData.air_quality || 0,
+                chartData.waste || 0,
+                chartData.water || 0,
+                chartData.other || 0
+            ],
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(255, 159, 64, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 99, 132, 0.7)'
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 99, 132, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    new Chart(dataTypeCtx, {
+        type: 'doughnut', // You can change to 'pie' if preferred
+        data: dataTypeData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Data Type Distribution' }
+            }
+        }
+    });
+    });
+</script>
+</body>
+</html>

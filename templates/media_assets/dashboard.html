@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mb-4">Dashboard</h2>
+
+            <!-- User Stats -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Your Submissions</h5>
+                            <h3>{{ user_submissions }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Pending Alerts</h5>
+                            <h3>{{ alerts }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Recent Activity</h5>
+                            <h3>{{ recent_activity|length }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Sidebar -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="list-group">
+                        <a href="{% url 'media_assets:dashboard' %}" class="list-group-item list-group-item-action active">Dashboard</a>
+                        <a href="{% url 'media_assets:submit_data' %}" class="list-group-item list-group-item-action">Submit Data</a>
+                        <a href="{% url 'media_assets:reports' %}" class="list-group-item list-group-item-action">Reports</a>
+                        <a href="{% url 'accounts:profile' %}" class="list-group-item list-group-item-action">Profile</a>
+                        <a href="{% url 'accounts:logout' %}" class="list-group-item list-group-item-action">Logout</a>
+                        {% if user.is_admin %}
+                        <a href="{% url 'media_assets:admin_dashboard' %}" class="list-group-item list-group-item-action">Admin Dashboard</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <!-- Recent Activity -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Recent Activity</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for activity in recent_activity %}
+                            <div class="mb-2">
+                                <strong>{{ activity.get_data_type_display }}</strong> - {{ activity.location }}: {{ activity.value }} {{ activity.unit }}
+                                <small class="text-muted">{{ activity.created_at|date:"M d, Y H:i" }}</small>
+                            </div>
+                            {% empty %}
+                            <p>No recent activity.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Media Assets Section -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Public Media Assets</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for media in media_assets %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ media.title }}</h6>
+                                            <p class="card-text">{{ media.description|truncatechars:50 }}</p>
+                                            <a href="{% url 'media_assets:media_detail' media.pk %}" class="btn btn-sm btn-primary">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-md-12">
+                                    <p class="text-center">No media assets available.</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Pagination -->
+                            {% if is_paginated %}
+                            <nav aria-label="Page navigation" class="mt-3">
+                                <ul class="pagination justify-content-center">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Previous</a></li>
+                                    {% endif %}
+                                    <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next</a></li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

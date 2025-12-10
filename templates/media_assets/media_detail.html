@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ media.title }} | EcoGuard Monitor{% endblock %}
+
+{% block extra_css %}
+<style>
+  .media-preview { background:#f8fafb; border-radius:8px; padding:12px; display:flex; align-items:center; justify-content:center; }
+  .media-preview img, .media-preview video { max-width:100%; max-height:520px; border-radius:6px; }
+  .meta-row { gap:12px; }
+  .tag { background:#eef7f0; color:#2e7d4f; padding:4px 8px; border-radius:999px; font-size:0.85rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card p-3">
+        <div class="media-preview">
+          {% if media.category == 'image' %}
+            {% if media.media_file and media.media_file.url %}
+              <img src="{{ media.media_file.url }}" alt="{{ media.title }}">
+            {% else %}
+              <div class="text-muted">No image available</div>
+            {% endif %}
+
+          {% elif media.category == 'video' %}
+            {% if media.media_file and media.media_file.url %}
+              <video controls>
+                <source src="{{ media.media_file.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            {% else %}
+              <div class="text-muted">No video available</div>
+            {% endif %}
+
+          {% else %}
+            <div class="text-center">
+              <svg width="96" height="96" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="#6c757d" stroke-width="1.2" fill="#f6f7f9"/>
+                <path d="M14 2v6h6" stroke="#6c757d" stroke-width="1.2"/>
+              </svg>
+              <div class="mt-2 text-muted">Document preview not available. <a href="{{ media.media_file.url }}" target="_blank">Open file</a></div>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mt-3">
+          <h3 class="mb-1">{{ media.title }}</h3>
+          <div class="d-flex align-items-center meta-row mb-2">
+            <div class="text-muted small">Uploaded by <strong>{{ media.uploaded_by.username }}</strong></div>
+            <div class="text-muted small">&middot; {{ media.created_at|date:'M j, Y \\a\\t H:i' }}</div>
+            <div class="tag">{{ media.category|capfirst }}</div>
+          </div>
+
+          {% if media.description %}
+            <p class="mb-3">{{ media.description }}</p>
+          {% endif %}
+
+          <div class="d-flex gap-2">
+            {% if media.media_file and media.media_file.url %}
+              <a href="{{ media.media_file.url }}" class="btn btn-outline-primary" target="_blank">Download / Open</a>
+            {% endif %}
+
+            {% if user.is_authenticated and (user == media.uploaded_by or user.is_superuser) %}
+              <a href="{% url 'media_assets:edit_media' media.id %}" class="btn btn-outline-secondary">Edit</a>
+              <a href="{% url 'media_assets:delete_view' media.id %}" class="btn btn-danger">Delete</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card p-3">
+        <h6 class="mb-2">Details</h6>
+        <ul class="list-unstyled small text-muted">
+          <li><strong>Views:</strong> {{ media.views_count|default:0 }}</li>
+          <li><strong>Visibility:</strong> {% if media.is_public %}Public{% else %}Private{% endif %}</li>
+          <li><strong>Category:</strong> {{ media.category|capfirst }}</li>
+        </ul>
+
+        <hr>
+        <h6 class="mb-2">Share</h6>
+        <div class="input-group mb-2">
+          <input type="text" class="form-control" value="{{ request.build_absolute_uri }}" id="shareUrl" readonly>
+          <button class="btn btn-outline-secondary" type="button" id="copyBtn">Copy</button>
+        </div>
+
+        <div class="text-muted small">Share this URL with colleagues to let them view the media (if public).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('copyBtn')?.addEventListener('click', function(){
+    const el = document.getElementById('shareUrl');
+    if(!el) return;
+    el.select();
+    navigator.clipboard?.writeText(el.value).then(()=>{
+      this.innerText = 'Copied';
+      setTimeout(()=> this.innerText = 'Copy', 1500);
+    }).catch(()=> alert('Copy failed'));
+  });
+</script>
+{% endblock %}
