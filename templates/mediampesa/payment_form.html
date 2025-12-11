@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Form{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Complete Your Payment</h3>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <h5>Plan: {{ plan|title }}</h5>
+                        <h5>Amount: KES {{ amount }}</h5>
+                    </div>
+
+                    <form method="post" action="{% url 'mpesa:stk_push' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">M-Pesa Phone Number</label>
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="0712345678" required maxlength="9" pattern="[0-9]{9}">
+                            <div class="form-text">Enter your 9-digit M-Pesa registered phone number (without 254 or +254)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                        </div>
+                        <input type="hidden" name="amount" value="{{ amount }}">
+                        <button type="submit" class="btn btn-success btn-block">Pay with M-Pesa</button>
+                        <a href="{% url 'mpesa:subscription' %}" class="btn btn-secondary btn-block">Back to Plans</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Format phone number input
+document.getElementById('phone').addEventListener('input', function(e) {
+    // Remove any non-digit characters
+    this.value = this.value.replace(/\D/g, '');
+    // Limit to 9 digits
+    if (this.value.length > 9) {
+        this.value = this.value.slice(0, 9);
+    }
+});
+</script>
+{% endblock %}

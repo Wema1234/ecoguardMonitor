@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Processing Payment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Processing Payment</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Please check your phone and enter your M-Pesa PIN to complete the payment.</p>
+                    <p>Transaction ID: {{ transaction.transaction_id }}</p>
+                    <button id="checkStatusBtn" class="btn btn-primary mt-3">Check Payment Status</button>
+                    <div id="statusResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('checkStatusBtn').addEventListener('click', function() {
+    fetch(`/mpesa/check_status/{{ transaction.transaction_id }}/`)
+
+        .then(response => response.json())
+        .then(data => {
+            const statusResult = document.getElementById('statusResult');
+            if (data.error) {
+                statusResult.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+            } else {
+                let statusClass = 'alert-info';
+                if (data.status === 'SUCCESS') {
+                    statusClass = 'alert-success';
+                    setTimeout(() => window.location.href = '{% url "mpesa:payment_success" %}', 2000);
+                } else if (data.status === 'FAILED') {
+                    statusClass = 'alert-danger';
+                    setTimeout(() => window.location.href = '{% url "mpesa:payment_failed" %}', 2000);
+                }
+                statusResult.innerHTML = `
+                    <div class="alert ${statusClass}">
+                        <strong>Status:</strong> ${data.status}<br>
+                        <strong>Amount:</strong> ${data.amount}<br>
+                        <strong>Description:</strong> ${data.description}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            document.getElementById('statusResult').innerHTML = '<div class="alert alert-danger">Error checking status</div>';
+        });
+});
+
+// Auto-check status every 5 seconds
+setInterval(() => {
+    document.getElementById('checkStatusBtn').click();
+}, 5000);
+</script>
+{% endblock %}

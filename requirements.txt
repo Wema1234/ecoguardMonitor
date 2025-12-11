@@ -1,6 +1,7 @@
 pillow
 cloudinary
-django 
+django
 python-decouple
 dotenv
+requests
 

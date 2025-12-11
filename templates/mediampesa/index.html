@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}M-Pesa Payment{% endblock %}
+
+{% block extra_css %}
+<style>
+    .mpesa-card {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+    }
+    .mpesa-card .card-header {
+        background: rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px 15px 0 0;
+    }
+    .mpesa-card .card-body {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .form-control {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        color: #333;
+    }
+    .form-control:focus {
+        background: white;
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+    }
+    .form-label {
+        color: white;
+        font-weight: 600;
+    }
+    .btn-mpesa {
+        background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    .btn-mpesa:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        background: linear-gradient(135deg, #F7931E 0%, #FF6B35 100%);
+    }
+    .mpesa-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.9;
+    }
+    .input-group-text {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card mpesa-card">
+                <div class="card-header text-center">
+                    <i class="fas fa-mobile-alt mpesa-icon"></i>
+                    <h3 class="card-title mb-0">M-Pesa Payment</h3>
+                    <p class="mb-0 opacity-75">Secure & Fast Mobile Money Payment</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" action="{% url 'mpesa:stk_push' %}">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">
+                                    <i class="fas fa-phone me-2"></i>Phone Number
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">+254</span>
+                                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="7XXXXXXXX" required pattern="[0-9]{9}" maxlength="9">
+                                </div>
+                                <div class="form-text text-white-50">Enter your M-Pesa registered number</div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="amount" class="form-label">
+                                    <i class="fas fa-money-bill-wave me-2"></i>Amount (KES)
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">KES</span>
+                                    <input type="number" class="form-control" id="amount" name="amount" min="1" max="150000" required>
+                                </div>
+                                <div class="form-text text-white-50">Minimum: KES 1, Maximum: KES 150,000</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-user me-2"></i>Full Name
+                            </label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com" required>
+                            <div class="form-text text-white-50">We'll send payment confirmation to this email</div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-mpesa btn-lg">
+                                <i class="fas fa-credit-card me-2"></i>Pay with M-Pesa
+                            </button>
+                        </div>
+
+                        <div class="mt-3 text-center">
+                            <small class="text-white-50">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                Your payment is secured with M-Pesa's encryption
+                            </small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card bg-light border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-clock text-warning mb-2" style="font-size: 1.5rem;"></i>
+                            <h6 class="card-title">Instant</h6>
+                            <small class="text-muted">Process payments instantly</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-lock text-success mb-2" style="font-size: 1.5rem;"></i>
+                            <h6 class="card-title">Secure</h6>
+                            <small class="text-muted">Bank-level security</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-mobile text-primary mb-2" style="font-size: 1.5rem;"></i>
+                            <h6 class="card-title">Mobile</h6>
+                            <small class="text-muted">Pay from your phone</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -229,6 +229,10 @@ def reports_view(request):
 @login_required
 def charts_view(request):
     '''view for environmental data charts'''
+    if not request.user.has_active_premium():
+        messages.info(request, 'Charts and analytics are premium features. Upgrade to access visual data insights.')
+        return redirect('mpesa:subscription')
+
     data_list = EnvironmentalData.objects.filter(is_approved=True)
     # Calculate counts for charts
     air_quality_count = data_list.filter(data_type='air_quality').count()

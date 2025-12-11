@@ -14,6 +14,7 @@ class Transactions(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     email = models.EmailField(blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
+    checkout_request_id = models.CharField(max_length=100, blank=True, null=True)
 
     
 

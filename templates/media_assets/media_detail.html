@@ -61,9 +61,11 @@
               <a href="{{ media.media_file.url }}" class="btn btn-outline-primary" target="_blank">Download / Open</a>
             {% endif %}
 
-            {% if user.is_authenticated and (user == media.uploaded_by or user.is_superuser) %}
-              <a href="{% url 'media_assets:edit_media' media.id %}" class="btn btn-outline-secondary">Edit</a>
-              <a href="{% url 'media_assets:delete_view' media.id %}" class="btn btn-danger">Delete</a>
+            {% if user.is_authenticated %}
+              {% if user == media.uploaded_by or user.is_superuser %}
+                <a href="{% url 'media_assets:edit_media' media.id %}" class="btn btn-outline-secondary">Edit</a>
+                <a href="{% url 'media_assets:delete_media' media.id %}" class="btn btn-danger">Delete</a>
+              {% endif %}
             {% endif %}
           </div>
         </div>

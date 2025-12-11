@@ -25,7 +25,15 @@ SECRET_KEY = 'django-insecure-kt9u%j$a(*uax$*bfy=-#))p4hmh@$8sp0+@48dimz-daz+hns
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "*.ngrok-free.app",
+
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.app",
+]
 
 
 # Application definition
@@ -158,3 +166,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# M-Pesa Configuration
+MPESA_CONSUMER_KEY = os.getenv('MPESA_CONSUMER_KEY', 'your_consumer_key_here')
+MPESA_CONSUMER_SECRET = os.getenv('MPESA_CONSUMER_SECRET', 'your_consumer_secret_here')
+MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE', '174379')
+MPESA_PASSKEY = os.getenv('MPESA_PASSKEY', 'your_passkey_here')
+BASE_URL = os.getenv('BASE_URL', 'http://localhost:8000')

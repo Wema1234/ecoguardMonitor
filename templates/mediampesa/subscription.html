@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Subscription Plans{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title text-center">Choose Your Subscription Plan</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h4>Premium Plan</h4>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">KES 500 / Month</h5>
+                                    <p class="card-text">
+                                        Unlock premium features including:
+                                        <ul>
+                                            <li>Advanced analytics</li>
+                                            <li>Unlimited data uploads</li>
+                                            <li>Priority support</li>
+                                            <li>Custom reports</li>
+                                        </ul>
+                                    </p>
+                                    <a href="{% url 'mpesa:payment_form' %}?plan=premium&amount=500" class="btn btn-primary btn-block">Subscribe Now</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-secondary text-white">
+                                    <h4>Basic Plan</h4>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Free</h5>
+                                    <p class="card-text">
+                                        Basic features:
+                                        <ul>
+                                            <li>Limited data uploads</li>
+                                            <li>Standard reports</li>
+                                            <li>Email support</li>
+                                        </ul>
+                                    </p>
+                                    <p class="text-muted">Current Plan</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
